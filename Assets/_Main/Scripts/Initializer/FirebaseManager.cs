@@ -24,14 +24,8 @@ namespace Phoenix.Firebase.Managers
                         "Could not resolve all Firebase dependencies: " + dependencyStatus);
             });
         }
-        protected virtual void Initialize()
-        {
-            
-        }
+        protected virtual void Initialize() {}
 
-        protected virtual void StateChanged(object sender, System.EventArgs eventArgs)
-        {
-           
-        }
+        protected virtual void StateChanged(object sender, System.EventArgs eventArgs) {}
     }
 }
