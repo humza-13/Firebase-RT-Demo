@@ -8,13 +8,13 @@ public class AuthManagerEditor : Editor
     {
         // Create a GUIStyle for the green box text.
         GUIStyle labelStyle = new GUIStyle(GUI.skin.label);
-        labelStyle.normal.textColor = Color.grey;
+        labelStyle.normal.textColor = Color.white;
         labelStyle.fontStyle = FontStyle.Bold;
         labelStyle.fontSize = 24;
         
         // Create a green box in the Inspector.
         GUIStyle greenBoxStyle = new GUIStyle(GUI.skin.box);
-        greenBoxStyle.normal.background = MakeTexture(1, 1, Color.green);
+        greenBoxStyle.normal.background = MakeTexture(1, 1, Color.black);
 
         // Begin a vertical layout group with the green box style.
         EditorGUILayout.BeginVertical(greenBoxStyle);
