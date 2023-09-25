@@ -1,8 +1,8 @@
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(Phoenix.Firebase.Auth.AuthManager))]
-public class AuthManagerEditor : Editor
+[CustomEditor(typeof(Phoenix.Firebase.RT.RTManager))]
+public class RTManagerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -14,13 +14,13 @@ public class AuthManagerEditor : Editor
         
         // Create a green box in the Inspector.
         GUIStyle greenBoxStyle = new GUIStyle(GUI.skin.box);
-        greenBoxStyle.normal.background = MakeTexture(1, 1, Color.black);
+        greenBoxStyle.normal.background = MakeTexture(1, 1, Color.green);
 
         // Begin a vertical layout group with the green box style.
         EditorGUILayout.BeginVertical(greenBoxStyle);
 
         // Calculate the size of the label.
-        GUIContent labelContent = new GUIContent("Auth Manager");
+        GUIContent labelContent = new GUIContent("DB Manager");
         Vector2 labelSize = labelStyle.CalcSize(labelContent);
 
         // Calculate the position to center the label both horizontally and vertically.
@@ -37,7 +37,7 @@ public class AuthManagerEditor : Editor
         GUILayout.Space(centerOffsetX);
 
         // Display the centered label "Auth Manager" using the custom GUIStyle.
-        GUILayout.Label("Auth Manager", labelStyle);
+        GUILayout.Label("DB Manager", labelStyle);
 
         // End the horizontal layout group.
         EditorGUILayout.EndHorizontal();

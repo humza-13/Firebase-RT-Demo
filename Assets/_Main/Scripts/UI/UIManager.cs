@@ -1,4 +1,4 @@
-﻿using Phoenix.Firebase.Managers;
+﻿using Phoenix.Firebase.Auth;
 using UnityEngine;
 using TMPro;
 
@@ -11,13 +11,8 @@ namespace Phoenix.UI.Managers
         [SerializeField] private TMP_InputField password;
         [SerializeField] private TMP_Text loginErrorText;
         
-        
-        public async void Signin()
-        {
-            Debug.LogError("Loading...");
+        public async void Signin() => 
             await AuthManager._authInstance.CreateOrLoginUser(username.text, password.text);
-            Debug.LogError("Process Completed");
-
-        }
+        
 }
 }
