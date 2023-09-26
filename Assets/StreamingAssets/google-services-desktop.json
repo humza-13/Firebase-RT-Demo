@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "1037265661742",
-    "firebase_url": "https://rt-demo-1d50e-default-rtdb.firebaseio.com",
-    "project_id": "rt-demo-1d50e",
-    "storage_bucket": "rt-demo-1d50e.appspot.com"
+    "project_number": "932866355111",
+    "firebase_url": "https://rt-demo-2af6a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "rt-demo-2af6a",
+    "storage_bucket": "rt-demo-2af6a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1037265661742:android:c93b048a03a5622fae94bf",
+        "mobilesdk_app_id": "1:932866355111:android:0a7b2cbb49660c79849082",
         "android_client_info": {
           "package_name": "com.phoenix.rtdemo"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDmvjJbN1xx_pcTvfn93ya5kXCL37Wh66s"
+          "current_key": "AIzaSyD8iGrtywDogrAh_dxaYWITOdaKqtO2_W4"
         }
       ],
       "services": {

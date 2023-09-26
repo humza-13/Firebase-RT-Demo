@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Phoenix.Network
 {
-    [RequireComponent(typeof(AuthManager))]
-    [RequireComponent(typeof(RTManager))]
+   // [RequireComponent(typeof(AuthManager))]
+   // [RequireComponent(typeof(RTManager))]
     public class NetworkManager : MonoBehaviour
     {
         public void HostGame() => 

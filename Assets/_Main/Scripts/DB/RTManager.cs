@@ -24,7 +24,7 @@ namespace Phoenix.Firebase.RT
             {
                 AppOptions options = new AppOptions
                 {
-                    DatabaseUrl = new System.Uri("https://rt-demo-1d50e-default-rtdb.firebaseio.com/"),
+                    DatabaseUrl = new System.Uri("https://rt-demo-2af6a-default-rtdb.asia-southeast1.firebasedatabase.app/"),
                 };
                 app = FirebaseApp.Create(options);
                 databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
