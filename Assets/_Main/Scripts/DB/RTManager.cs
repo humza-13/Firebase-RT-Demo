@@ -8,7 +8,8 @@ namespace Phoenix.Firebase.RT
     public class RTManager : FirebaseManager
     {
         public static RTManager _rtInstance;
-
+        
+        #region Overrides
         protected override void Start()
         {
             base.Start();
@@ -26,11 +27,13 @@ namespace Phoenix.Firebase.RT
                     DatabaseUrl = new System.Uri("https://rt-demo-1d50e-default-rtdb.firebaseio.com/"),
                 };
                 app = FirebaseApp.Create(options);
+                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
             }
 
-            databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
         }
-        
+        #endregion
+
+        #region Hosting
         public void HostGame(string playerUid)
         {
             string sessionId = GenerateUniqueSessionId();
@@ -41,15 +44,43 @@ namespace Phoenix.Firebase.RT
                 player2_uid = "",
                 game_started = false
             };
-            Debug.Log("Setting User Data");
             databaseReference.Child(sessionId).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
-            Debug.Log("Sent User Data");
-
         }
         private string GenerateUniqueSessionId()
         {
             return $"{System.DateTime.Now.Ticks}-{Random.Range(1000, 9999)}";
         }
+        #endregion
+
+        #region Joining
+        public async void JoinGame(string currentPlayerUid)
+        {
+            DataSnapshot snapshot = await databaseReference.GetValueAsync();
+
+            if (snapshot.Exists)
+            {
+                foreach (var session in snapshot.Children)
+                {
+                    string sessionId = session.Key;
+                    var sessionData = session.GetRawJsonValue();
+                    GameSession gameSession = JsonUtility.FromJson<GameSession>(sessionData);
+                    
+                    if (!gameSession.game_started && string.IsNullOrEmpty(gameSession.player2_uid))
+                    {
+                        gameSession.player2_uid = currentPlayerUid;
+                        gameSession.game_started = true;
+                        
+                        await databaseReference.Child(sessionId).SetRawJsonValueAsync(JsonUtility.ToJson(gameSession));
+                        Debug.Log("Joined game session: " + sessionId);
+                        return;
+                    }
+                }
+            }
+            Debug.Log("No available game sessions found. Creating one!");
+            HostGame(currentPlayerUid);
+        }
+
+        #endregion
         
     }
 }

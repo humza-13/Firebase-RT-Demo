@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1037265661742",
+    "firebase_url": "https://rt-demo-1d50e-default-rtdb.firebaseio.com",
     "project_id": "rt-demo-1d50e",
     "storage_bucket": "rt-demo-1d50e.appspot.com"
   },
