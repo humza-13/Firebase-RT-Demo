@@ -12,7 +12,7 @@ namespace Phoenix.UI.Managers
         [SerializeField] private TMP_Text loginErrorText;
         
         public async void Signin() => 
-            await AuthManager._authInstance.CreateOrLoginUser(username.text, password.text);
+            await AuthManager.AuthInstance.CreateOrLoginUser(username.text, password.text);
         
 }
 }

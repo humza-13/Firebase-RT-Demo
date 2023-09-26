@@ -9,28 +9,31 @@ namespace Phoenix.Firebase.RT
 {
     public class RTManager : FirebaseManager
     {
-        public static RTManager _rtInstance;
-        public string CUURENT_SESSION;
+        #region Attributes
+        public static RTManager RTInstance;
+        public string currentSession;
+        public event Action OnGameStart;
+        #endregion
         
         #region Overrides
         protected override void Start()
         {
             base.Start();
-            if (dependencyStatus == DependencyStatus.Available) Initialize();
-            _rtInstance = this;
+            if (DependencyStatus == DependencyStatus.Available) Initialize();
+            RTInstance = this;
         }
         protected override void Initialize()
         {
             base.Initialize();
             
-            if (dependencyStatus == DependencyStatus.Available)
+            if (DependencyStatus == DependencyStatus.Available)
             {
                 AppOptions options = new AppOptions
                 {
                     DatabaseUrl = new System.Uri("https://rt-demo-2af6a-default-rtdb.asia-southeast1.firebasedatabase.app/"),
                 };
-                app = FirebaseApp.Create(options);
-                databaseReference = FirebaseDatabase.DefaultInstance.RootReference;
+                App = FirebaseApp.Create(options);
+                DatabaseReference = FirebaseDatabase.DefaultInstance.RootReference;
             }
 
         }
@@ -39,14 +42,14 @@ namespace Phoenix.Firebase.RT
         #region Hosting
         public void HostGame(string playerUid)
         {
-            CUURENT_SESSION = GenerateUniqueSessionId();
+            currentSession = GenerateUniqueSessionId();
             var sessionData = new GameSession()
             {
                 player1_uid = playerUid,
                 player2_uid = "",
                 game_started = false
             };
-            databaseReference.Child(CUURENT_SESSION).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
+            DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
             SetGameStartEvent();
         }
         private string GenerateUniqueSessionId()
@@ -58,13 +61,13 @@ namespace Phoenix.Firebase.RT
         #region Joining
         public async void JoinGame(string currentPlayerUid)
         {
-            DataSnapshot snapshot = await databaseReference.GetValueAsync();
+            DataSnapshot snapshot = await DatabaseReference.GetValueAsync();
 
             if (snapshot.Exists)
             {
                 foreach (var session in snapshot.Children)
                 {
-                    CUURENT_SESSION = session.Key;
+                    currentSession = session.Key;
                     var sessionData = session.GetRawJsonValue();
                     GameSession gameSession = JsonUtility.FromJson<GameSession>(sessionData);
                     
@@ -73,7 +76,7 @@ namespace Phoenix.Firebase.RT
                         gameSession.player2_uid = currentPlayerUid;
                         gameSession.game_started = true;
                         
-                        await databaseReference.Child(CUURENT_SESSION).SetRawJsonValueAsync(JsonUtility.ToJson(gameSession));
+                        await DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(gameSession));
                         SetGameStartEvent();
                         return;
                     }
@@ -87,8 +90,8 @@ namespace Phoenix.Firebase.RT
         #region Events
         private void SetGameStartEvent()
         {
-            DatabaseReference db = databaseReference
-                .Child(CUURENT_SESSION).Child("game_started");
+            DatabaseReference db = DatabaseReference
+                .Child(currentSession).Child("game_started");
             
             db.ValueChanged += (sender, args) =>
             {
@@ -99,9 +102,8 @@ namespace Phoenix.Firebase.RT
                 }
 
                 bool gameStarted = Convert.ToBoolean(args.Snapshot.Value);
-    
                 if (gameStarted)
-                    Debug.Log("Game has started!");
+                    OnGameStart?.Invoke();
             };
         }
 
@@ -111,7 +113,7 @@ namespace Phoenix.Firebase.RT
 
         public DatabaseReference GetDBReference()
         {
-            return databaseReference;
+            return DatabaseReference;
         }
         
         #endregion

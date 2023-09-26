@@ -8,13 +8,26 @@ namespace Phoenix.Network
 {
     public class NetworkManager : MonoBehaviour
     {
+        private void Start()
+        {
+            RTManager.RTInstance.OnGameStart += OnGameStartEvent;
+        }
+        
         #region Match Making
         public void HostGame() => 
-            RTManager._rtInstance.HostGame(AuthManager._authInstance.GetCurrentUser().UserId);
+            RTManager.RTInstance.HostGame(AuthManager.AuthInstance.GetCurrentUser().UserId);
         public void JoinGame() => 
-            RTManager._rtInstance.JoinGame(AuthManager._authInstance.GetCurrentUser().UserId);
+            RTManager.RTInstance.JoinGame(AuthManager.AuthInstance.GetCurrentUser().UserId);
         #endregion
-        
+
+        #region Events
+
+        private void OnGameStartEvent()
+        {
+            Debug.Log("Game Started");
+        }
+
+        #endregion
 
     }
 }

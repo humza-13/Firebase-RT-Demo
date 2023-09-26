@@ -9,43 +9,43 @@ namespace Phoenix.Firebase.Auth
 {
     public class AuthManager : FirebaseManager
     {
-        public static AuthManager _authInstance;
+        public static AuthManager AuthInstance;
 
         protected override void Start()
         {
             base.Start();
-            if (dependencyStatus == DependencyStatus.Available) Initialize();
-            _authInstance = this;
+            if (DependencyStatus == DependencyStatus.Available) Initialize();
+            AuthInstance = this;
         }
 
         protected override void Initialize()
         {
             base.Initialize();
-            auth = FirebaseAuth.DefaultInstance;
-            auth.StateChanged += StateChanged;
+            Auth = FirebaseAuth.DefaultInstance;
+            Auth.StateChanged += StateChanged;
             StateChanged(this, null);
         }
 
         protected override void StateChanged(object sender, EventArgs eventArgs)
         {
             base.StateChanged(sender, eventArgs);
-            if (auth.CurrentUser != user)
+            if (Auth.CurrentUser != User)
             {
-                bool isSignedIn = user != auth.CurrentUser && auth.CurrentUser != null
-                                                           && auth.CurrentUser.IsValid();
-                if (!isSignedIn && user != null)
-                    Debug.Log("Signed out " + user.UserId);
+                bool isSignedIn = User != Auth.CurrentUser && Auth.CurrentUser != null
+                                                           && Auth.CurrentUser.IsValid();
+                if (!isSignedIn && User != null)
+                    Debug.Log("Signed out " + User.UserId);
 
-                user = auth.CurrentUser;
+                User = Auth.CurrentUser;
                 if (isSignedIn)
-                    Debug.Log("Signed in " + user.UserId);
+                    Debug.Log("Signed in " + User.UserId);
 
             }
         }
 
         public async Task CreateOrLoginUser(string email, string password)
         {
-            await auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(async authTask =>
+            await Auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(async authTask =>
             {
                 if (authTask.IsCanceled)
                     return;
@@ -64,7 +64,7 @@ namespace Phoenix.Firebase.Auth
         }
         private async Task SignIn(string email, string password)
         {
-           await auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(authTask =>
+           await Auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(authTask =>
            {
                 if (authTask.IsCanceled || authTask.IsFaulted)
                     return;
@@ -77,7 +77,7 @@ namespace Phoenix.Firebase.Auth
 
         public FirebaseUser GetCurrentUser()
         {
-            return user;
+            return User;
         }
     }
 }
