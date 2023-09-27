@@ -283,7 +283,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fcbdc1e021cc694296ba2668e89c894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentSession: 
 --- !u!114 &93986893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3018,7 +3017,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 93986890}
         m_TargetAssemblyTypeName: Phoenix.Network.NetworkManager, Assembly-CSharp
-        m_MethodName: HostGame
+        m_MethodName: LeaveSession
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -19,11 +19,13 @@ namespace Phoenix.Network
             RTController.RTInstance.OnGameStart += OnGameStartEvent;
         }
         
-        #region Match Making
+        #region Session Handling
         protected virtual void HostGame() => 
             RTController.RTInstance.HostGame(AuthController.AuthInstance.GetCurrentUser().UserId);
         protected virtual void JoinGame() => 
             RTController.RTInstance.JoinGame(AuthController.AuthInstance.GetCurrentUser().UserId);
+        protected virtual void LeaveSession() =>
+            RTController.RTInstance.LeaveSession(AuthController.AuthInstance.GetCurrentUser().UserId);
         #endregion
 
         #region Events

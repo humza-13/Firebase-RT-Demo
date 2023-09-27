@@ -10,8 +10,6 @@ namespace Phoenix.Firebase.RT
 {
     public class RTController : FirebaseController
     {
-        
-        
         #region Actions
         public event Action OnGameStart;
         public event Action<string> OnPlayerJoin; 
@@ -53,7 +51,7 @@ namespace Phoenix.Firebase.RT
             {
                 AppOptions options = new AppOptions
                 {
-                    DatabaseUrl = new System.Uri("https://rt-demo-2af6a-default-rtdb.asia-southeast1.firebasedatabase.app/"),
+                    DatabaseUrl = new Uri("https://rt-demo-2af6a-default-rtdb.asia-southeast1.firebasedatabase.app/"),
                 };
                 App = FirebaseApp.Create(options);
                 DatabaseReference = FirebaseDatabase.DefaultInstance.RootReference;
@@ -84,7 +82,7 @@ namespace Phoenix.Firebase.RT
         }
         private string GenerateUniqueSessionId()
         {
-            return $"{System.DateTime.Now.Ticks}-{Random.Range(1000, 9999)}";
+            return $"{DateTime.Now.Ticks}-{Random.Range(1000, 9999)}";
         }
         #endregion
 
@@ -117,6 +115,38 @@ namespace Phoenix.Firebase.RT
             HostGame(currentPlayerUid);
         }
 
+        #endregion
+
+        #region Leave Session
+        public async void LeaveSession(string currentPlayerUid)
+        {
+            List<DatabaseReference> players = new List<DatabaseReference>();
+            players.Add(DatabaseReference
+                .Child(CurrentSession).Child("player1_uid"));
+            players.Add(DatabaseReference
+                .Child(CurrentSession).Child("player2_uid"));
+            
+            foreach (var player in players)
+            {
+                var uid = await player.GetValueAsync();
+                if (uid == null)
+                {
+                    Debug.LogError("Error reading data: ");
+                    return;
+                }
+                
+                if (uid.Value.ToString() == currentPlayerUid)
+                {
+                    DatabaseReference db = DatabaseReference
+                        .Child(CurrentSession).Child(uid.Key);
+                    await db.RemoveValueAsync();
+                    OnPlayerLeft?.Invoke(currentPlayerUid);
+
+                }
+                        
+                        
+            }
+        }
         #endregion
         
         #region Listeners
