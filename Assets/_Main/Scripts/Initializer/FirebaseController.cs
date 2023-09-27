@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Phoenix.Firebase.Managers
 {
-    public class FirebaseManager : MonoBehaviour
+    public class FirebaseController : MonoBehaviour
     {
         protected static FirebaseAuth Auth;
         protected static FirebaseUser User;
@@ -16,6 +16,8 @@ namespace Phoenix.Firebase.Managers
         
         protected virtual void Start()
         {
+            if(DependencyStatus == DependencyStatus.Available) return;
+            
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
             {
                 DependencyStatus = task.Result;

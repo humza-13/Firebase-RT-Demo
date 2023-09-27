@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Firebase;
 using Firebase.Database;
 using Phoenix.Firebase.Managers;
@@ -7,20 +8,42 @@ using Random = UnityEngine.Random;
 
 namespace Phoenix.Firebase.RT
 {
-    public class RTManager : FirebaseManager
+    public class RTController : FirebaseController
     {
-        #region Attributes
-        public static RTManager RTInstance;
         public string currentSession;
-        public event Action OnGameStart;
-        #endregion
         
+        #region Actions
+        public event Action OnGameStart;
+        public event Action<string> OnPlayerJoin; 
+        public event Action<string> OnPlayerLeft;
+     
+        #endregion
+
+        #region Singleton
+        private static RTController _rtInstance;
+        public static RTController RTInstance
+        {
+            get { return _rtInstance; }
+            private set { _rtInstance = value; }
+        }
+        private void Awake()
+        {
+            if (_rtInstance != null && _rtInstance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            RTInstance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        #endregion
+       
         #region Overrides
         protected override void Start()
         {
             base.Start();
             if (DependencyStatus == DependencyStatus.Available) Initialize();
-            RTInstance = this;
         }
         protected override void Initialize()
         {
@@ -35,7 +58,6 @@ namespace Phoenix.Firebase.RT
                 App = FirebaseApp.Create(options);
                 DatabaseReference = FirebaseDatabase.DefaultInstance.RootReference;
             }
-
         }
         #endregion
 
@@ -43,14 +65,22 @@ namespace Phoenix.Firebase.RT
         public void HostGame(string playerUid)
         {
             currentSession = GenerateUniqueSessionId();
-            var sessionData = new GameSession()
+            var sessionData = new SessionStruct()
+            {
+                player1_uid = "",
+                player2_uid = "",
+                game_started = false
+            };
+            DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
+            PlayerListener();
+            GameStartListener();
+            var p1 = new SessionStruct()
             {
                 player1_uid = playerUid,
                 player2_uid = "",
                 game_started = false
             };
-            DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
-            SetGameStartEvent();
+            DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(p1));
         }
         private string GenerateUniqueSessionId()
         {
@@ -62,22 +92,24 @@ namespace Phoenix.Firebase.RT
         public async void JoinGame(string currentPlayerUid)
         {
             DataSnapshot snapshot = await DatabaseReference.GetValueAsync();
-
+            
             if (snapshot.Exists)
             {
                 foreach (var session in snapshot.Children)
                 {
                     currentSession = session.Key;
                     var sessionData = session.GetRawJsonValue();
-                    GameSession gameSession = JsonUtility.FromJson<GameSession>(sessionData);
-                    
-                    if (!gameSession.game_started && string.IsNullOrEmpty(gameSession.player2_uid))
+                    SessionStruct sessionStruct = JsonUtility.FromJson<SessionStruct>(sessionData);
+                    if (!sessionStruct.game_started && string.IsNullOrEmpty(sessionStruct.player2_uid))
                     {
-                        gameSession.player2_uid = currentPlayerUid;
-                        gameSession.game_started = true;
+                        PlayerListener();
+                        GameStartListener();
+                        sessionStruct.player2_uid = currentPlayerUid;
+                        await DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionStruct));
                         
-                        await DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(gameSession));
-                        SetGameStartEvent();
+                        sessionStruct.game_started = true;
+                        await DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionStruct));
+                        
                         return;
                     }
                 }
@@ -87,8 +119,8 @@ namespace Phoenix.Firebase.RT
 
         #endregion
         
-        #region Events
-        private void SetGameStartEvent()
+        #region Listeners
+        private void GameStartListener()
         {
             DatabaseReference db = DatabaseReference
                 .Child(currentSession).Child("game_started");
@@ -105,6 +137,32 @@ namespace Phoenix.Firebase.RT
                 if (gameStarted)
                     OnGameStart?.Invoke();
             };
+        }
+
+        private void PlayerListener()
+        {
+            List<DatabaseReference> players = new List<DatabaseReference>();
+            players.Add(DatabaseReference
+                .Child(currentSession).Child("player1_uid"));
+            players.Add(DatabaseReference
+                .Child(currentSession).Child("player2_uid"));
+            foreach (var player in players)
+            {
+                player.ValueChanged += (sender, args) =>
+                {
+                    if (args.DatabaseError != null)
+                    {
+                        Debug.LogError("Error reading game_started: " + args.DatabaseError.Message);
+                        return;
+                    }
+
+                    string uid = Convert.ToString(args.Snapshot.Value);
+                    if(!string.IsNullOrEmpty(uid))
+                        OnPlayerJoin?.Invoke(uid);
+                    
+                };
+            }
+
         }
 
         #endregion

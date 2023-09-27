@@ -7,15 +7,34 @@ using UnityEngine;
 
 namespace Phoenix.Firebase.Auth
 {
-    public class AuthManager : FirebaseManager
+    public class AuthController : FirebaseController
     {
-        public static AuthManager AuthInstance;
+        #region Singleton
+        
+        private static AuthController _authInstance;
 
+        public static AuthController AuthInstance
+        {
+            get { return _authInstance; }
+            private set { _authInstance = value; }
+        }
+        private void Awake()
+        {
+            if (_authInstance != null && _authInstance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            AuthInstance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        
+        #endregion
         protected override void Start()
         {
             base.Start();
             if (DependencyStatus == DependencyStatus.Available) Initialize();
-            AuthInstance = this;
         }
 
         protected override void Initialize()
@@ -45,7 +64,7 @@ namespace Phoenix.Firebase.Auth
 
         public async Task CreateOrLoginUser(string email, string password)
         {
-            await Auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(async authTask =>
+            await Auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(async authTask  =>
             {
                 if (authTask.IsCanceled)
                     return;

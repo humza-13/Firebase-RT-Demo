@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace Phoenix.Firebase.RT
 {
     [Serializable]
-    public struct GameSession
+    public struct SessionStruct
     {
         public string player1_uid;
         public string player2_uid;
@@ -14,7 +15,7 @@ namespace Phoenix.Firebase.RT
     [Serializable]
     public struct GameSessions
     {
-        public Dictionary<string, GameSession> games;
+        public Dictionary<string, SessionStruct> sessions;
     }
 
     }

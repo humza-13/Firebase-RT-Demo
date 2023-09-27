@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(Phoenix.Firebase.RT.RTManager))]
+[CustomEditor(typeof(Phoenix.Firebase.RT.RTController))]
 public class RTManagerEditor : Editor
 {
     public override void OnInspectorGUI()

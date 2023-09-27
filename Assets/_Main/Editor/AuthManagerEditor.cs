@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(Phoenix.Firebase.Auth.AuthManager))]
+[CustomEditor(typeof(Phoenix.Firebase.Auth.AuthController))]
 public class AuthManagerEditor : Editor
 {
     public override void OnInspectorGUI()

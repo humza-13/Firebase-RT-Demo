@@ -10,23 +10,34 @@ namespace Phoenix.Network
     {
         private void Start()
         {
-            RTManager.RTInstance.OnGameStart += OnGameStartEvent;
+            RTController.RTInstance.OnPlayerJoin += OnPlayerJoin;
+            RTController.RTInstance.OnPlayerLeft += OnPlayerLeft;
+            RTController.RTInstance.OnGameStart += OnGameStartEvent;
         }
         
         #region Match Making
         public void HostGame() => 
-            RTManager.RTInstance.HostGame(AuthManager.AuthInstance.GetCurrentUser().UserId);
+            RTController.RTInstance.HostGame(AuthController.AuthInstance.GetCurrentUser().UserId);
         public void JoinGame() => 
-            RTManager.RTInstance.JoinGame(AuthManager.AuthInstance.GetCurrentUser().UserId);
+            RTController.RTInstance.JoinGame(AuthController.AuthInstance.GetCurrentUser().UserId);
         #endregion
 
         #region Events
 
-        private void OnGameStartEvent()
+        protected virtual void OnGameStartEvent()
         {
             Debug.Log("Game Started");
         }
 
+        protected virtual void OnPlayerJoin(string uuid)
+        {
+            Debug.Log("Player: " + uuid + " joined");
+        }
+        protected virtual void OnPlayerLeft(string uuid)
+        {
+            Debug.Log("Player: " + uuid + " left");
+        }
+        
         #endregion
 
     }
