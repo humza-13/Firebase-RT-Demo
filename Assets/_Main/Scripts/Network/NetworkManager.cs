@@ -1,4 +1,5 @@
-﻿using Phoenix.Firebase.Auth;
+﻿using Firebase.Auth;
+using Phoenix.Firebase.Auth;
 using Phoenix.Firebase.RT;
 using UnityEngine;
 
@@ -8,8 +9,11 @@ namespace Phoenix.Network
     [RequireComponent(typeof(RTController))]
     public class NetworkManager : MonoBehaviour
     {
-        private void Start()
+        private void Awake()
         {
+            AuthController.AuthInstance.OnSignedIn += OnUserSignedIn;
+            AuthController.AuthInstance.OnSignedOut += OnUserSignedOut;
+            
             RTController.RTInstance.OnPlayerJoin += OnPlayerJoin;
             RTController.RTInstance.OnPlayerLeft += OnPlayerLeft;
             RTController.RTInstance.OnGameStart += OnGameStartEvent;
@@ -31,7 +35,11 @@ namespace Phoenix.Network
         
         protected virtual void OnPlayerLeft(string uuid) =>
             Debug.Log("Player: " + uuid + " left");
-        
+        protected virtual void OnUserSignedIn(FirebaseUser user) => 
+             Debug.Log(user.UserId + " is logged in");
+        protected virtual void OnUserSignedOut(FirebaseUser user) => 
+            Debug.Log(user.UserId + " is logged out");
+
         #endregion
 
     }

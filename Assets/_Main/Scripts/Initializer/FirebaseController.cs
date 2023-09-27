@@ -14,6 +14,7 @@ namespace Phoenix.Firebase.Managers
         protected static DependencyStatus DependencyStatus;
         protected static DatabaseReference DatabaseReference;
         protected static FirebaseApp App;
+        protected static string CurrentSession;
         #endregion
         protected virtual void Start()
         {

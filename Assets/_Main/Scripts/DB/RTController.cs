@@ -10,7 +10,7 @@ namespace Phoenix.Firebase.RT
 {
     public class RTController : FirebaseController
     {
-        public string currentSession;
+        
         
         #region Actions
         public event Action OnGameStart;
@@ -64,14 +64,14 @@ namespace Phoenix.Firebase.RT
         #region Hosting
         public void HostGame(string playerUid)
         {
-            currentSession = GenerateUniqueSessionId();
+            CurrentSession = GenerateUniqueSessionId();
             var sessionData = new SessionStruct()
             {
                 player1_uid = "",
                 player2_uid = "",
                 game_started = false
             };
-            DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
+            DatabaseReference.Child(CurrentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionData));
             PlayerListener();
             GameStartListener();
             var p1 = new SessionStruct()
@@ -80,7 +80,7 @@ namespace Phoenix.Firebase.RT
                 player2_uid = "",
                 game_started = false
             };
-            DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(p1));
+            DatabaseReference.Child(CurrentSession).SetRawJsonValueAsync(JsonUtility.ToJson(p1));
         }
         private string GenerateUniqueSessionId()
         {
@@ -97,7 +97,7 @@ namespace Phoenix.Firebase.RT
             {
                 foreach (var session in snapshot.Children)
                 {
-                    currentSession = session.Key;
+                    CurrentSession = session.Key;
                     var sessionData = session.GetRawJsonValue();
                     SessionStruct sessionStruct = JsonUtility.FromJson<SessionStruct>(sessionData);
                     if (!sessionStruct.game_started && string.IsNullOrEmpty(sessionStruct.player2_uid))
@@ -105,10 +105,10 @@ namespace Phoenix.Firebase.RT
                         PlayerListener();
                         GameStartListener();
                         sessionStruct.player2_uid = currentPlayerUid;
-                        await DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionStruct));
+                        await DatabaseReference.Child(CurrentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionStruct));
                         
                         sessionStruct.game_started = true;
-                        await DatabaseReference.Child(currentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionStruct));
+                        await DatabaseReference.Child(CurrentSession).SetRawJsonValueAsync(JsonUtility.ToJson(sessionStruct));
                         
                         return;
                     }
@@ -123,7 +123,7 @@ namespace Phoenix.Firebase.RT
         private void GameStartListener()
         {
             DatabaseReference db = DatabaseReference
-                .Child(currentSession).Child("game_started");
+                .Child(CurrentSession).Child("game_started");
             
             db.ValueChanged += (sender, args) =>
             {
@@ -143,9 +143,9 @@ namespace Phoenix.Firebase.RT
         {
             List<DatabaseReference> players = new List<DatabaseReference>();
             players.Add(DatabaseReference
-                .Child(currentSession).Child("player1_uid"));
+                .Child(CurrentSession).Child("player1_uid"));
             players.Add(DatabaseReference
-                .Child(currentSession).Child("player2_uid"));
+                .Child(CurrentSession).Child("player2_uid"));
             
             foreach (var player in players)
             {

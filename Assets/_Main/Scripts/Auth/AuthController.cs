@@ -9,6 +9,11 @@ namespace Phoenix.Firebase.Auth
 {
     public class AuthController : FirebaseController
     {
+        #region Actions
+        public event Action<FirebaseUser> OnSignedIn;
+        public event Action<FirebaseUser> OnSignedOut;
+        
+        #endregion
         #region Singleton
         private static AuthController _authInstance;
 
@@ -53,11 +58,11 @@ namespace Phoenix.Firebase.Auth
                 bool isSignedIn = User != Auth.CurrentUser && Auth.CurrentUser != null
                                                            && Auth.CurrentUser.IsValid();
                 if (!isSignedIn && User != null)
-                    Debug.Log("Signed out " + User.UserId);
+                   OnSignedOut?.Invoke(User);
 
                 User = Auth.CurrentUser;
                 if (isSignedIn)
-                    Debug.Log("Signed in " + User.UserId);
+                   OnSignedIn?.Invoke(User);
 
             }
         }
@@ -77,8 +82,7 @@ namespace Phoenix.Firebase.Auth
                 else
                 {
                     AuthResult result = authTask.Result;
-                    Debug.LogFormat("Firebase user created successfully: {0} ({1})",
-                        result.User.DisplayName, result.User.UserId);
+                    OnSignedIn?.Invoke(User);
                 }
             });
 
@@ -91,8 +95,7 @@ namespace Phoenix.Firebase.Auth
                     return;
 
                 AuthResult result = authTask.Result;
-                Debug.LogFormat("User signed in successfully: {0} ({1})",
-                    result.User.DisplayName, result.User.UserId);
+                OnSignedIn?.Invoke(User);
             });
         }
         #endregion
