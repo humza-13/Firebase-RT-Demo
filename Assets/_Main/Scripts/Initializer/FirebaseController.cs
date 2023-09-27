@@ -8,12 +8,13 @@ namespace Phoenix.Firebase.Managers
 {
     public class FirebaseController : MonoBehaviour
     {
+        #region Static
         protected static FirebaseAuth Auth;
         protected static FirebaseUser User;
         protected static DependencyStatus DependencyStatus;
         protected static DatabaseReference DatabaseReference;
         protected static FirebaseApp App;
-        
+        #endregion
         protected virtual void Start()
         {
             if(DependencyStatus == DependencyStatus.Available) return;

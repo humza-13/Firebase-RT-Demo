@@ -146,6 +146,7 @@ namespace Phoenix.Firebase.RT
                 .Child(currentSession).Child("player1_uid"));
             players.Add(DatabaseReference
                 .Child(currentSession).Child("player2_uid"));
+            
             foreach (var player in players)
             {
                 player.ValueChanged += (sender, args) =>
@@ -164,7 +165,6 @@ namespace Phoenix.Firebase.RT
             }
 
         }
-
         #endregion
 
         #region Helper

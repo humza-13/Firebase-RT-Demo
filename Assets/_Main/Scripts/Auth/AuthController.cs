@@ -10,7 +10,6 @@ namespace Phoenix.Firebase.Auth
     public class AuthController : FirebaseController
     {
         #region Singleton
-        
         private static AuthController _authInstance;
 
         public static AuthController AuthInstance
@@ -29,8 +28,9 @@ namespace Phoenix.Firebase.Auth
             AuthInstance = this;
             DontDestroyOnLoad(gameObject);
         }
-        
         #endregion
+
+        #region Overrides
         protected override void Start()
         {
             base.Start();
@@ -61,7 +61,9 @@ namespace Phoenix.Firebase.Auth
 
             }
         }
+        #endregion
 
+        #region Auth
         public async Task CreateOrLoginUser(string email, string password)
         {
             await Auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(async authTask  =>
@@ -93,10 +95,13 @@ namespace Phoenix.Firebase.Auth
                     result.User.DisplayName, result.User.UserId);
             });
         }
+        #endregion
 
+        #region Helper
         public FirebaseUser GetCurrentUser()
         {
             return User;
         }
+        #endregion
     }
 }
